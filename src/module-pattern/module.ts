@@ -215,7 +215,7 @@ const AccountManager = (function () {
 })();
 
 // Example usage:
-
+/*
 AccountManager.createAccount("Ashis", 1000);
 AccountManager.createAccount("Rahim", 500);
 
@@ -231,3 +231,170 @@ console.log(AccountManager.getSummary());
 console.log(AccountManager.getAccessLogs());
 console.log(AccountManager.withdraw("Rahim", 10000));
 // console.log(AccountManager.logAccess()) // Property 'logAccess' does not exist on type
+*/
+
+// Dependency Injection Example
+
+// 1. Type definitions (Interfaces) for each module
+interface InventoryActions {
+  unitPrice: (totalPrice: number, quantity: number) => number;
+  totalPrice: (unitPrice: number, quantity: number) => number;
+  generateInvoice: (
+    itemName: string,
+    quantity: number,
+    unitPrice: number,
+    discountRate: number,
+    taxRate: number,
+  ) => string;
+}
+
+interface SalesActions {
+  processSale: (
+    itemName: string,
+    quantity: number,
+    unitPrice: number,
+    discountRate: number,
+    taxRate: number,
+  ) => string;
+}
+
+interface CustomerActions {
+  createCustomer: (name: string, email: string) => string;
+  getCustomerInfo: (name: string) => string;
+}
+
+interface OrderActions {
+  placeOrder: (
+    customerName: string,
+    itemName: string,
+    quantity: number,
+    unitPrice: number,
+    discountRate: number,
+    taxRate: number,
+  ) => string;
+}
+
+interface BillingActions {
+  calculateBill: (
+    itemName: string,
+    quantity: number,
+    unitPrice: number,
+    discountRate: number,
+    taxRate: number,
+  ) => string;
+}
+
+// 2. Main Object
+const AsionMart: {
+  Inventory?: InventoryActions;
+  Sales?: SalesActions;
+  Customer?: CustomerActions;
+  Order?: OrderActions;
+  BillingCalculator?: BillingActions;
+  CustomerOrderBilling?: any;
+} = {};
+
+// 3. Inventory Module
+AsionMart.Inventory = (function (): InventoryActions {
+  const calculateDiscount = (total: number, rate: number) =>
+    total * (rate / 100);
+  const calculateTax = (total: number, rate: number) => total * (rate / 100);
+
+  return {
+    unitPrice: (total, qty) => total / qty,
+    totalPrice: (price, qty) => price * qty,
+    generateInvoice: (itemName, quantity, unitPrice, discountRate, taxRate) => {
+      const total = unitPrice * quantity;
+      const discount = calculateDiscount(total, discountRate);
+      const discountedTotal = total - discount;
+      const tax = calculateTax(discountedTotal, taxRate);
+      const finalPrice = discountedTotal + tax;
+
+      return `
+      --- INVOICE ---
+      Item: ${itemName} x ${quantity}
+      Unit Price: $${unitPrice.toFixed(2)}
+      Total: $${total.toFixed(2)}
+      Discount (${discountRate}%): -$${discount.toFixed(2)}
+      Tax (${taxRate}%): +$${tax.toFixed(2)}
+      Final Price: $${finalPrice.toFixed(2)}
+      ----------------`;
+    },
+  };
+})();
+
+// 4. Sales Module (Depends on Inventory)
+AsionMart.Sales = (function (Inv: InventoryActions): SalesActions {
+  return {
+    processSale: (itemName, qty, price, disc, tax) =>
+      Inv.generateInvoice(itemName, qty, price, disc, tax),
+  };
+})(AsionMart.Inventory);
+
+// 5. Customer Module
+AsionMart.Customer = (function (): CustomerActions {
+  return {
+    createCustomer: (name, email) => `👤 Customer: ${name} (${email})`,
+    getCustomerInfo: (name) => `Customer Info: ${name}`,
+  };
+})();
+
+// 6. Order Module (Depends on Sales)
+AsionMart.Order = (function (Sales: SalesActions): OrderActions {
+  return {
+    placeOrder: (customer, item, qty, price, disc, tax) => {
+      const invoice = Sales.processSale(item, qty, price, disc, tax);
+      return `📦 Order placed for ${customer}:\n${invoice}`;
+    },
+  };
+})(AsionMart.Sales!);
+
+// 7. Billing Module (Depends on Inventory)
+AsionMart.BillingCalculator = (function (
+  Inv: InventoryActions,
+): BillingActions {
+  return {
+    calculateBill: (item, qty, price, disc, tax) =>
+      Inv.generateInvoice(item, qty, price, disc, tax),
+  };
+})(AsionMart.Inventory!);
+
+// 8. CustomerOrderBilling (The Orchestrator)
+AsionMart.CustomerOrderBilling = (function (
+  Cust: CustomerActions,
+  Ord: OrderActions,
+  Bill: BillingActions,
+) {
+  return {
+    createCustomerPlaceOrderAndCalculateBill: (
+      name: string,
+      email: string,
+      item: string,
+      qty: number,
+      price: number,
+      disc: number,
+      tax: number,
+    ) => {
+      const customerInfo = Cust.createCustomer(name, email);
+      const orderDetails = Ord.placeOrder(name, item, qty, price, disc, tax);
+
+      // Here the result is returned directly to avoid duplicate invoices
+      return `${customerInfo}\n${orderDetails}\n✅ Billing process completed successfully.`;
+    },
+  };
+})(AsionMart.Customer!, AsionMart.Order!, AsionMart.BillingCalculator!);
+
+// --- Example Usage ---
+
+const report =
+  AsionMart.CustomerOrderBilling.createCustomerPlaceOrderAndCalculateBill(
+    "Sabbir Ahmed",
+    "sabbir@email.com",
+    "MacBook Pro",
+    1,
+    2500,
+    10,
+    5,
+  );
+
+console.log(report);
