@@ -1,3 +1,4 @@
+// object literal singleton pattern
 const StationClock = {
   _hours: 12,
   _minutes: 0,
@@ -26,6 +27,7 @@ const StationClock = {
   },
 };
 
+/*
 console.log("Asion Station Clock:");
 StationClock.displayTime(); // 12:00:00
 StationClock.tick();
@@ -58,3 +60,173 @@ console.log(
   StationClock === RajshahiStationClock &&
     RajshahiStationClock === DhakaStationClock,
 );
+*/
+
+// immediately invoked function expression (IIFE) or module based singleton pattern
+const StationBell = (function () {
+  let ringCount = 0;
+
+  const instance = {
+    ring() {
+      ringCount++;
+      console.log(`Station bell rang ${ringCount} times.`);
+    },
+
+    totalRings() {
+      return ringCount;
+    },
+  };
+
+  return instance;
+})();
+
+// Example usage
+/*
+console.log("Ringing the station bell:");
+StationBell.ring(); // Station bell rang 1 times.
+StationBell.ring(); // Station bell rang 2 times.
+
+console.log("Total rings:", StationBell.totalRings()); // Total rings: 2
+*/
+
+// class ClockMechanism {
+//   private static instance: ClockMechanism;
+
+//   private hours: number;
+//   private minutes: number;
+//   private seconds: number;
+
+//   private constructor() {
+//     this.hours = 12;
+//     this.minutes = 0;
+//     this.seconds = 0;
+//   }
+
+//   public static getInstance(): ClockMechanism {
+//     if (!ClockMechanism.instance) {
+//       ClockMechanism.instance = new ClockMechanism();
+//     }
+//     return ClockMechanism.instance;
+//   }
+
+//   public tick() {
+//     this.seconds++;
+//     if (this.seconds === 60) {
+//       this.seconds = 0;
+//       this.minutes++;
+//     }
+//     if (this.minutes === 60) {
+//       this.minutes = 0;
+//       this.hours++;
+//     }
+//     if (this.hours === 13) {
+//       this.hours = 1;
+//     }
+//   }
+
+//   public displayTime() {
+//     const hours = this.hours.toString().padStart(2, "0");
+//     const minutes = this.minutes.toString().padStart(2, "0");
+//     const seconds = this.seconds.toString().padStart(2, "0");
+//     console.log(`${hours}:${minutes}:${seconds}`);
+//   }
+// }
+
+// Example usage
+/*
+const stationClock1 = ClockMechanism.getInstance();
+const stationClock2 = ClockMechanism.getInstance();
+
+console.log("Station Clock 1:");
+stationClock1.displayTime(); // 12:00:00
+
+console.log("Station Clock 2:");
+stationClock2.displayTime(); // 12:00:00
+
+console.log("Ticking Station Clock 1:");
+stationClock1.tick();
+stationClock1.tick();
+
+console.log("Station Clock 1 after ticking:");
+stationClock1.displayTime(); // 12:00:02
+
+console.log("Station Clock 2 after Station Clock 1 ticked:");
+stationClock2.displayTime(); // 12:00:02
+
+console.log(
+  "Is Same Instance: ",
+  stationClock1 === stationClock2,
+);
+*/
+
+// lazy initialization singleton pattern
+class ClockMechanism {
+  // 1. Static properties must be declared inside the class.
+  private static _instance: ClockMechanism | null = null;
+
+  // 2. Properties must be defined before the constructor
+  public gears: number;
+  public wounds: boolean;
+
+  // 3. The constructor must be private to prevent direct instantiation (Singleton pattern)
+  private constructor() {
+    this.gears = 42;
+    this.wounds = false;
+    console.log("Clock Mechanism Initialized");
+  }
+
+  // 4. This method will check if an instance exists, and create it if not
+  static getInstance(): ClockMechanism {
+    if (!ClockMechanism._instance) {
+      ClockMechanism._instance = new ClockMechanism();
+    }
+    return ClockMechanism._instance;
+  }
+
+  wind() {
+    this.wounds = true;
+    console.log("Clock wound up.");
+  }
+
+  status() {
+    console.log(`Gears: ${this.gears}, Wounds: ${this.wounds ? "Yes" : "No"}`);
+  }
+}
+
+// Now this is how you use it:
+
+/*
+const mech1 = ClockMechanism.getInstance();
+const mech2 = ClockMechanism.getInstance();
+// const mech3 = new ClockMechanism(); // Error: Constructor of class 'ClockMechanism' is private and only accessible within the class declaration.
+
+console.log("Clock Mechanism 1 Status:");
+mech1.status();
+
+console.log("Winding Clock Mechanism 1...");
+mech1.wind();
+
+console.log("Clock Mechanism 2 Status (Should be wound too):");
+mech2.status();
+
+console.log("Is Same Instance: ", mech1 === mech2); // true
+*/
+
+// module pattern based singleton
+const StationAnnouncement = function () {
+  const config = {
+    platform: 8,
+    tracks: 4,
+    junctions: "Rajshahi Junction",
+  };
+
+  return Object.freeze(config); // Freezing the config object to prevent modifications
+};
+
+// Example usage
+
+const announcement1 = StationAnnouncement();
+
+console.log("Platform:", announcement1.platform); // Platform: 8
+// announcement1.platform = 10; // This will not change the platform due to Object.freeze. Cannot assign to 'platform' because it is a read-only property.
+console.log("Platform: ", announcement1.platform);
