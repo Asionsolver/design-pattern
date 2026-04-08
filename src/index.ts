@@ -8,4 +8,7 @@
 // import "./namespace/validation";
 
 // Module Pattern Example
-import "./module-pattern/module";
+// import "./module-pattern/module";
+
+// Singleton Pattern Example
+import "./singleton-pattern/singleton";
