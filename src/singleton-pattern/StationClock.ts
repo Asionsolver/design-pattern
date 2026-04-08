@@ -213,20 +213,86 @@ console.log("Is Same Instance: ", mech1 === mech2); // true
 */
 
 // module pattern based singleton
-const StationAnnouncement = function () {
-  const config = {
-    platform: 8,
-    tracks: 4,
-    junctions: "Rajshahi Junction",
-  };
+// const StationAnnouncement = function () {
+//   const config = {
+//     platform: 8,
+//     tracks: 4,
+//     junctions: "Rajshahi Junction",
+//   };
 
-  return Object.freeze(config); // Freezing the config object to prevent modifications
-};
+//   return Object.freeze(config); // Freezing the config object to prevent modifications
+// };
 
 // Example usage
-
+/*
 const announcement1 = StationAnnouncement();
 
 console.log("Platform:", announcement1.platform); // Platform: 8
 // announcement1.platform = 10; // This will not change the platform due to Object.freeze. Cannot assign to 'platform' because it is a read-only property.
 console.log("Platform: ", announcement1.platform);
+*/
+
+const StationAnnouncement = (function () {
+  // 1. Private variable that will only exist in memory once (Singleton Instance)
+  let instance: {
+    makeAnnouncement: (message: string) => void;
+    updatePlatform: (newPlatform: number) => void;
+    platform: number;
+  } | null = null;
+
+  function createInstance() {
+    // Private data
+    const config = {
+      platform: 8,
+      tracks: 4,
+      junctions: "Rajshahi Junction",
+    };
+
+    // Method 1
+    function makeAnnouncement(message: string) {
+      console.log(`Announcement from Platform ${config.platform}: ${message}`);
+    }
+
+    // Method 2
+    function updatePlatform(newPlatform: number) {
+      config.platform = newPlatform;
+      console.log(`Platform updated to ${config.platform}`);
+    }
+
+    // 2. Object as a return value with methods and properties
+    return Object.freeze({
+      makeAnnouncement,
+      updatePlatform,
+      get platform() {
+        return config.platform;
+      }, // Getter as a property
+    });
+  }
+
+  return {
+    // 3. External method to check if an instance exists
+    getInstance: function () {
+      if (!instance) {
+        instance = createInstance();
+      }
+      return instance;
+    },
+  };
+})();
+
+// Example usage:
+const announcement1 = StationAnnouncement.getInstance();
+const announcement2 = StationAnnouncement.getInstance();
+
+console.log("Platform:", announcement1.platform); // 8
+
+// Call Method 1
+announcement1.makeAnnouncement("The intercity train is arriving.");
+
+// Call Method 2
+announcement1.updatePlatform(10);
+
+// Check the effect of Method 2
+announcement2.makeAnnouncement("Next train on the new platform.");
+
+console.log("Is Same Instance: ", announcement1 === announcement2); // true
