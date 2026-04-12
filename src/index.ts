@@ -11,4 +11,7 @@
 // import "./module-pattern/module";
 
 // Singleton Pattern Example
-import "./singleton-pattern/singleton";
+// import "./singleton-pattern/singleton";
+
+// adapter pattern example
+import "./adapter-pattern/adapter";
