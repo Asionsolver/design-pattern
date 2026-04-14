@@ -2,4 +2,5 @@
 // import "./NewsAgency";
 // import "./StoreInventorySystem";
 // import "./StockMarketTicker";
-import "./Multi-chanelNotificationSystem";
+// import "./Multi-chanelNotificationSystem";
+import "./StockMarketDashboard";
