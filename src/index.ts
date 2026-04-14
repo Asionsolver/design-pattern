@@ -14,4 +14,7 @@
 // import "./singleton-pattern/singleton";
 
 // adapter pattern example
-import "./adapter-pattern/adapter";
+// import "./adapter-pattern/adapter";
+
+// Observer pattern example
+import "./Observer-pattern/Observer";
