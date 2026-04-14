@@ -1,4 +1,5 @@
 // import "./WeatherStation";
 // import "./NewsAgency";
 // import "./StoreInventorySystem";
-import "./StockMarketTicker";
+// import "./StockMarketTicker";
+import "./Multi-chanelNotificationSystem";
