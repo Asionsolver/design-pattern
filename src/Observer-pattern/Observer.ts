@@ -1,1 +1,2 @@
-import "./WeatherStation";
+// import "./WeatherStation";
+import "./NewsAgency";
