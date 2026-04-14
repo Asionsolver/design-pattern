@@ -16,7 +16,11 @@ class Stripe {
     console.log(`Charged ${amount} using Stripe.`);
   }
 }
-
+class Bkash {
+  sendMoney(amount: number) {
+    console.log(`Sent ${amount} using Bkash.`);
+  }
+}
 // Adapter for PayPal
 class PayPalAdapter implements PaymentProcessor {
   constructor(private paypal: PayPal) {}
@@ -33,10 +37,19 @@ class StripeAdapter implements PaymentProcessor {
   }
 }
 
+class BkashAdapter implements PaymentProcessor {
+  constructor(private bkash: Bkash) {}
+
+  processPayment(amount: number): void {
+    this.bkash.sendMoney(amount);
+  }
+}
+
 // Client Code
 const processors: PaymentProcessor[] = [
   new PayPalAdapter(new PayPal()),
   new StripeAdapter(new Stripe()),
+  new BkashAdapter(new Bkash()),
 ];
 
 processors.forEach((p) => p.processPayment(100));
