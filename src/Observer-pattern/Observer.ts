@@ -1,2 +1,3 @@
 // import "./WeatherStation";
-import "./NewsAgency";
+// import "./NewsAgency";
+import "./StoreInventorySystem";
